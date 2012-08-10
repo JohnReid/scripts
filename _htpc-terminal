@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+wake-htpc
+
+while (( 1 ))
+do
+  ssh -fX htpc xfce4-terminal && break
+  sleep 5
+done
+ssh -f htpc mythshutdown --lock
+sudo mount /mnt/htpc-music

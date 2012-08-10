@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+PID=${1?-USAGE: $0 <PID>}
+
+while (( 1 ))
+do
+  if ps $PID 2>&1 >/dev/null
+  then
+    DATE=$(date)
+    PSINFO=$(ps h -o pid,%cpu,size,vsz,rss,sz,%mem $PID)
+    echo $DATE $PSINFO
+  fi
+  sleep 5
+done | tee -a process-$PID.log

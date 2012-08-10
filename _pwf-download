@@ -1,0 +1,8 @@
+#!/bin/bash
+
+usage="$0 <url>"
+url=${1?:$usage}
+filename=$(basename $url)
+ssh pwf "cd Downloads; rm $filename; wget -O $filename $url"
+scp pwf:Downloads/$filename ~/Downloads/$filename
+ssh pwf "rm Downloads/$filename"

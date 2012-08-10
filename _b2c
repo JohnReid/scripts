@@ -1,0 +1,3 @@
+#!/bin/bash
+START='++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+(echo $START; b2 "$@" 2>&1) | colourise red $START red ' error' green 'Running build from'  yellow ' warning'

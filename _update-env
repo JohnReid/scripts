@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+#
+# Copyright John Reid 2011
+#
+
+"""
+Code to update environment variables.
+"""
+
+import os
+from optparse import OptionParser
+from collections import defaultdict
+
+def make_unique(*iterable):
+    s = set()
+    for i in iterable:
+        if i not in s:
+            s.add(i)
+            yield i
+
+
+environment_vars = [
+    ('LD_LIBRARY_PATH', 'ld'),
+    ('PYTHONPATH', 'py'),
+    ('PATH', 'path'),
+]
+
+
+#
+# Set up the options based on the defined environment variables
+#
+parser = OptionParser()
+parser.add_option(
+    '--show-all',
+    action='store_true',
+    help='Show the values of all the environment variables.'
+)
+for varname, tag in environment_vars:
+    parser.add_option(
+        '--%s-pre' % tag,
+        action='append',
+        default=[],
+        help='Values to prepend to %s' % varname
+    )
+    parser.add_option(
+        '--%s-app' % tag,
+        action='append',
+        default=[],
+        help='Values to append to %s' % varname
+    )
+
+
+#
+# Parse the options
+#
+options, args = parser.parse_args()
+
+
+#
+# Get the existing values of the environment variables
+#
+env_vars = defaultdict(list)
+for varname, tag in environment_vars:
+    env_vars[varname] = os.environ.get(varname, "").split(':')
+
+
+#
+# Add the values defined in the options to the environment variables
+# and write if changed
+#
+anything_changed = False
+for varname, tag in environment_vars:
+    changed = False
+
+    for v in getattr(options, '%s_pre' % tag):
+        changed = True
+        env_vars[varname].insert(0, v)
+
+    for v in getattr(options, '%s_app' % tag):
+        changed = True
+        env_vars[varname].append(v)
+
+    # Write if we changed anything
+    if changed:
+        anything_changed = True
+        env_vars[varname] = map(os.path.normpath, make_unique(*env_vars[varname]))
+        print 'export %s=%s' % (varname, ':'.join(env_vars[varname]))
+
+#
+# Show the environment variables if asked or if not asked to change anything
+#
+if options.show_all or not anything_changed:
+    for varname, tag in environment_vars:
+        print '#\n# %s\n#   %s\n#' % (varname, '\n#   '.join(env_vars[varname]))
+
