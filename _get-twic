@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+i=211
+while true
+do
+
+    echo "**************** $i *****************"
+
+    zip_file=twic${i}g.zip
+    pgn_file=twic${i}.pgn
+
+    [ -f $zip_file ] \
+        || wget http://www.chesscenter.com/twic/zips/$zip_file \
+        || break
+
+    [ -f $pgn_file ] \
+        || unzip $zip_file \
+        || rm $zip_file
+
+    i=$(($i + 1))
+
+done
+
+mv twic*/games/*.pgn . || echo "Did not need to move PGN files."
+rm twic.pgn
+
+echo "Concatenating PGN files"
+cat *.pgn > twic.pgn
+
+echo "Deduplicating"
+pgn-extract -s -D twic.pgn -o twic-deduped.pgn
+
+echo "Converting to SCID format."
+pgnscid -f twic-deduped.pgn TWIC
