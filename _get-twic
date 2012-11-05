@@ -3,9 +3,10 @@
 TWICPGN=twic.pgn.gz
 DEDUPED=twic-deduped.pgn.gz
 week=211
+#week=900
 
 #
-# For each week get the PGN, remove Ctrl-Ms and compress
+# For each week get the PGN, remove Ctrl-Ms, lines composing of '-' and compress
 #
 while true
 do
@@ -24,7 +25,7 @@ do
     # Increase the week counter
     #
     week=$(($week + 1))
-done | sed 's///g' | gzip -c > $TWICPGN
+done | sed 's///g' | tidy-twic-pgn | gzip -c > $TWICPGN
 
 
 
@@ -33,8 +34,8 @@ done | sed 's///g' | gzip -c > $TWICPGN
 #
 echo "Deduplicating..."
 zcat $TWICPGN | pgn-extract -s -D | gzip -c >$DEDUPED
-rm $TWICPGN
+#rm $TWICPGN
 echo "Converting to SCID format"
 pgnscid -f $DEDUPED TWIC
-rm $DEDUPED
+#rm $DEDUPED
 

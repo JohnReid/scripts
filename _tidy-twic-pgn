@@ -1,0 +1,23 @@
+#!/usr/bin/env python2
+
+"""
+Removes pairs of lines where the second line is composed solely of '-'
+"""
+
+import sys, re
+
+dash_line_re = re.compile('-+')
+
+hold = None
+for line in sys.stdin:
+    line = line.strip()
+    if None != hold:
+        if dash_line_re.match(line):
+            hold = None
+        else:
+            print hold
+            hold = line
+    else:
+        hold = line
+if None != hold:
+    print hold

@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+TFP=${1:?USAGE $0 <TFP.tar.gz>}
+BIOBASEDIR=$HOME/Data/biobase
+TFPDIR=$BIOBASEDIR/transfac
+
+FILES=$(tar zvxf ~/Downloads/TFP_2012.2_data.tar.gz --wildcards dat/*)
+echo "Extracted $FILES"
+[ -d $TFPDIR ] || mkdir $TFPDIR
+mv $FILES $TFPDIR
+
