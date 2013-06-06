@@ -2,7 +2,10 @@
 
 TWICPGN=twic.pgn.gz
 DEDUPED=twic-deduped.pgn.gz
-week=211
+#week=211
+week=920
+#DOWNLOAD_URL=http://www.chesscenter.com/twic/zips
+DOWNLOAD_URL=http://www.theweekinchess.com/zips
 #week=900
 
 #
@@ -15,7 +18,7 @@ do
     #
     zip_file=twic${week}g.zip
     [ -f $zip_file ] \
-        || wget http://www.chesscenter.com/twic/zips/$zip_file \
+        || wget $DOWNLOAD_URL/$zip_file \
         || break
     #
     # Extract the contents
