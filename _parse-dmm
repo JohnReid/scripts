@@ -10,7 +10,8 @@ PSSMs. The PWMs can be found here_.
 
 import sys
 import os
-from itertools import count
+import traceback
+from itertools import count, imap
 
 
 def output_file(filename):
@@ -57,25 +58,42 @@ try:
         assert len(a) == len(t)
 
         #
+        # Can we find the count of number of sites?
+        #
+        try:
+            count = 35
+            xml_name = pwm.upper().replace('-', '_')
+            xml = open(os.path.join(xml_name, '%s_imm.xml' % xml_name))
+            for l in xml:
+                if -1 != l.find('words-count'):
+                    fields = l.split("'")
+                    count = float(fields[1])
+                    #print count
+                    break
+        except:
+            traceback.print_exc()
+
+        #
         # Output to custom PSSM file.
         #
-        print pwm
+        print '%8s %4.1f' % (pwm, count)
         tag = 'IMM-%05d' % i
         out = output_file('%s.pssm' % tag)
         print >>out, 'ID  %s' % tag
         print >>out, 'NA  %s' % pwm
         print >>out, 'WI  %d' % len(a)
         print >>out, 'PO  %s' % ' '.join(
-            ('%02d' % j) for j in xrange(1, len(a)))
+            ('%02d' % j) for j in xrange(1, len(a) + 1))
         for b, x in (
             ('A', a),
             ('C', c),
             ('G', g),
             ('T', t),
         ):
-            print >>out, 'C%s  %s' % (b, ' '.join(map(str, x)))
+            print >>out, 'C%s  %s' % (
+                b, ' '.join(imap(str, imap(lambda y: count * y, x))))
 
-        # Write to PSSM set.
+        # Write ID to PSSM set.
         print >>pssm_set, tag
         out.close()
         del out
