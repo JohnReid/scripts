@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+"""
+Script to parse IMM text file defining PWMs and output them as biopsy custom
+PSSMs. The PWMs can be found here_.
+
+.. _here: http://autosome.ru/iDMMPMM/
+"""
+
+
+import sys
+import os
+from itertools import count
+
+
+def output_file(filename):
+    return open(os.path.join('custom-pssms', filename), 'w')
+
+#
+# Check arguments
+#
+usage = 'USAGE: %s [IMM PWM file]' % sys.argv[0]
+if 2 < len(sys.argv):
+    print usage
+    sys.exit(-1)
+elif 0 == len(sys.argv):
+    f = sys.stdin
+else:
+    f = open(sys.argv[1])
+
+
+#
+# Write entire set to this file
+#
+pssm_set = output_file('IMM.pssm_set')
+
+#
+# Stop at end of file
+#
+try:
+    #
+    # For each PWM
+    #
+    for i in count():
+        # Ignore blank lines
+        header = ''
+        while not header:
+            header = f.next().strip()
+        # Get PWM name and frequencies
+        pwm = header.split()[1]
+        a = map(float, f.next().strip().split())
+        c = map(float, f.next().strip().split())
+        g = map(float, f.next().strip().split())
+        t = map(float, f.next().strip().split())
+        assert len(a) == len(c)
+        assert len(a) == len(g)
+        assert len(a) == len(t)
+
+        #
+        # Output to custom PSSM file.
+        #
+        print pwm
+        tag = 'IMM-%05d' % i
+        out = output_file('%s.pssm' % tag)
+        print >>out, 'ID  %s' % tag
+        print >>out, 'NA  %s' % pwm
+        print >>out, 'WI  %d' % len(a)
+        print >>out, 'PO  %s' % ' '.join(
+            ('%02d' % j) for j in xrange(1, len(a)))
+        for b, x in (
+            ('A', a),
+            ('C', c),
+            ('G', g),
+            ('T', t),
+        ):
+            print >>out, 'C%s  %s' % (b, ' '.join(map(str, x)))
+
+        # Write to PSSM set.
+        print >>pssm_set, tag
+        out.close()
+        del out
+
+except StopIteration:
+    pssm_set.close()
+    del pssm_set
