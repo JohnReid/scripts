@@ -1,0 +1,23 @@
+#!/usr/bin/python2
+
+import logging
+logging.basicConfig(level=logging.INFO)
+
+import sys
+import os
+import timeit
+
+times = dict()
+
+drives = sys.argv[1:]
+for in_drive in drives:
+    infile = os.path.join(in_drive, 'infile')
+    for out_drive in drives:
+        outfile = os.path.join(out_drive, '%s.out' % in_drive.strip('/'))
+        logging.info('Reading from %15s; writing to %15s', infile, outfile)
+        cmd = "subprocess.check_call(['/bin/dd', 'bs=1M', 'count=256', 'if=%s', 'of=%s', 'conv=fdatasync'])" \
+            % (infile, outfile)
+        logging.info(cmd)
+        time = timeit.timeit(cmd, setup='import subprocess', number=4)
+        times[(in_drive, out_drive)] = time
+        logging.info('Took %s seconds', time)
