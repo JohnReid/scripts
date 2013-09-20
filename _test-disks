@@ -3,21 +3,84 @@
 import logging
 logging.basicConfig(level=logging.INFO)
 
+import subprocess
 import sys
 import os
-import timeit
+import time
+from rpy2 import robjects
+from rpy2.robjects.packages import importr
+import rpy2.robjects.lib.ggplot2 as ggplot2
 
-times = dict()
+def dd_cmd(in_drive, out_drive):
+    subprocess.check_call([
+        '/bin/dd',
+        'bs=1M',
+        'count=256',
+        'if=%s' % os.path.join(in_drive, 'infile'),
+        'of=%s' % os.path.join(out_drive, 'outfile'),
+        'conv=fdatasync',
+    ])
+
+
+def tar_cmd(in_drive, out_drive):
+    subprocess.check_call([
+        'tar',
+        '-zxf', os.path.join(in_drive, 'tarfile.tgz'),
+        '-C', out_drive,
+    ])
+
 
 drives = sys.argv[1:]
-for in_drive in drives:
-    infile = os.path.join(in_drive, 'infile')
-    for out_drive in drives:
-        outfile = os.path.join(out_drive, '%s.out' % in_drive.strip('/'))
-        logging.info('Reading from %15s; writing to %15s', infile, outfile)
-        cmd = "subprocess.check_call(['/bin/dd', 'bs=1M', 'count=256', 'if=%s', 'of=%s', 'conv=fdatasync'])" \
-            % (infile, outfile)
-        logging.info(cmd)
-        time = timeit.timeit(cmd, setup='import subprocess', number=4)
-        times[(in_drive, out_drive)] = time
-        logging.info('Took %s seconds', time)
+
+
+try:
+    indrives, outdrives, times
+except NameError:
+    indrives = []
+    outdrives = []
+    times = []
+
+
+def time_cmds(drives, numrepeats=10):
+    for i in xrange(numrepeats):
+        for in_drive in drives:
+            infile = os.path.join(in_drive, 'infile')
+            for out_drive in drives:
+                logging.debug('Reading from %8s; writing to %8s', in_drive, out_drive)
+                start = time.time()
+                tar_cmd(in_drive, out_drive)
+                duration = time.time() - start
+                times.append(duration)
+                indrives.append(in_drive)
+                outdrives.append(out_drive)
+                logging.info('Took %6.1f seconds to read from %8s and write to %8s',
+                    duration, in_drive, out_drive)
+
+
+time_cmds(drives)
+
+
+df = robjects.DataFrame({
+    'times' : robjects.FloatVector(times),
+    'indrives' : robjects.StrVector(indrives),
+    'outdrives' : robjects.StrVector(outdrives),
+})
+
+
+grdevices = importr('grDevices')
+
+def plot_times(filename, df, fill):
+    grdevices.png(file=filename, width=512, height=512)
+    gp = ggplot2.ggplot(df)
+    pp = (
+        gp
+        + ggplot2.aes_string(x='times', fill=fill)
+        + ggplot2.scale_x_log10()
+        + ggplot2.geom_density(alpha=.5)
+    )
+    pp.plot()
+    grdevices.dev_off()
+
+plot_times("times-by-out.png", df, "outdrives")
+plot_times("times-by-in.png", df, "indrives")
+
