@@ -6,7 +6,7 @@ DEDUPED=twic-deduped.pgn.gz
 week=920
 #DOWNLOAD_URL=http://www.chesscenter.com/twic/zips
 DOWNLOAD_URL=http://www.theweekinchess.com/zips
-#week=900
+week=920
 
 #
 # For each week get the PGN, remove Ctrl-Ms, lines composing of '-' and compress
