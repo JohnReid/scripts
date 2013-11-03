@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+USAGE="USAGE: $O <search term> <object file> ..."
+SEARCHTERM=${1?:$USAGE}
+echo "Search term: $SEARCHTERM"
+shift
+for OBJ in "${@?:$USAGE}"
+do
+    echo "***** $OBJ"
+    nm $OBJ | grep "$SEARCHTERM" || [ 1 ]  # Don't want script to exit on grep not matching
+done
