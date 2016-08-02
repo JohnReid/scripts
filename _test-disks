@@ -4,6 +4,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import subprocess
+import cPickle
 import sys
 import os
 import time
@@ -22,15 +23,16 @@ def dd_cmd(in_drive, out_drive):
     ])
 
 
-def tar_cmd(in_drive, out_drive):
+def tar_cmd(in_drive, out_drive, filename='large.tgz'):
     subprocess.check_call([
         'tar',
-        '-zxf', os.path.join(in_drive, 'tarfile.tgz'),
+        '-zxf', os.path.join(in_drive, filename),
         '-C', out_drive,
     ])
 
 
 drives = sys.argv[1:]
+drives = ('tmp', 'home', 'project', 'scratch')
 
 
 try:
@@ -41,14 +43,14 @@ except NameError:
     times = []
 
 
-def time_cmds(drives, numrepeats=10):
+def time_cmds(drives, numrepeats=30):
     for i in xrange(numrepeats):
         for in_drive in drives:
             infile = os.path.join(in_drive, 'infile')
             for out_drive in drives:
                 logging.debug('Reading from %8s; writing to %8s', in_drive, out_drive)
                 start = time.time()
-                tar_cmd(in_drive, out_drive)
+                tar_cmd(in_drive, out_drive, filename='large.tgz')
                 duration = time.time() - start
                 times.append(duration)
                 indrives.append(in_drive)
@@ -58,6 +60,7 @@ def time_cmds(drives, numrepeats=10):
 
 
 time_cmds(drives)
+cPickle.dump((indrives, outdrives, times), open('times.pickle', 'w'))
 
 
 df = robjects.DataFrame({
@@ -69,18 +72,34 @@ df = robjects.DataFrame({
 
 grdevices = importr('grDevices')
 
-def plot_times(filename, df, fill):
+def plot_times(filename, df, fill, log=False, density=False):
+    logging.info('Creating plot: %s', filename)
     grdevices.png(file=filename, width=512, height=512)
     gp = ggplot2.ggplot(df)
-    pp = (
-        gp
-        + ggplot2.aes_string(x='times', fill=fill)
-        + ggplot2.scale_x_log10()
-        + ggplot2.geom_density(alpha=.5)
-    )
+    pp = gp
+    if density:
+        pp += ggplot2.aes_string(x='times', fill=fill)
+        pp += ggplot2.geom_density(alpha=.5)
+        if log:
+            pp += ggplot2.scale_x_log10()
+    else:
+        pp += ggplot2.aes_string(y='times', x=fill)
+        pp += ggplot2.geom_boxplot()
+        if log:
+            pp += ggplot2.scale_y_log10()
     pp.plot()
     grdevices.dev_off()
 
-plot_times("times-by-out.png", df, "outdrives")
-plot_times("times-by-in.png", df, "indrives")
-
+for log in (True, False):
+    logtag = log and '-log' or ''
+    for density in (True, False):
+        densitytag = density and '-density' or '-box'
+        for out in (True, False):
+            outtag = out and '-out' or '-in'
+            filename = 'times-by%s%s%s.png' % (outtag, densitytag, logtag)
+            plot_times(
+                filename,
+                df,
+                out and "outdrives" or 'indrives',
+                log=log,
+                density=density)

@@ -1,0 +1,7 @@
+#!/bin/bash -ex
+
+for PID in $(pgrep -u john R)
+do
+    taskset -p 0xffffffffffff $PID
+done
+
