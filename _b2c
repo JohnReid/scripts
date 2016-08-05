@@ -1,3 +1,5 @@
 #!/bin/bash
 START='++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
-(echo $START; b2 "$@" 2>&1) | colourise red $START red ' error' green 'Running build from'  yellow ' warning'
+B2=b2
+which b2 || B2=bjam
+(echo $START; $B2 "$@" 2>&1) | colourise red $START red ' error' green 'Running build from'  yellow ' warning'

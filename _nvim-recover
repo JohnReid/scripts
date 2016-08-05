@@ -1,0 +1,6 @@
+#!/bin/bash -e
+#
+# Recover filenames from nvim swap directory
+#
+
+ls ~/.local/share/nvim/swap/* | sed 's/^.*swap\///' | sed 's/%/\//g' | sed 's/\.sw.$//'
