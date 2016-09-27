@@ -1,0 +1,11 @@
+#!/bin/bash -ex
+
+OUTPUTDIR=converted
+[ ! -d $OUTPUTDIR ] || exit -1
+IMAGES=$(ls)
+
+mkdir $OUTPUTDIR
+for IMAGE in $IMAGES
+do
+    convert $IMAGE "$@" $OUTPUTDIR/$IMAGE
+done
