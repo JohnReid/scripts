@@ -84,12 +84,12 @@ for varname, tag in environment_vars:
     if changed:
         anything_changed = True
         env_vars[varname] = map(os.path.normpath, make_unique(*env_vars[varname]))
-        print 'export %s=%s' % (varname, ':'.join(env_vars[varname]))
+        print('export %s=%s' % (varname, ':'.join(env_vars[varname])))
 
 #
 # Show the environment variables if asked or if not asked to change anything
 #
 if options.show_all or not anything_changed:
     for varname, tag in environment_vars:
-        print '#\n# %s\n#   %s\n#' % (varname, '\n#   '.join(env_vars[varname]))
+        print('#\n# %s\n#   %s\n#' % (varname, '\n#   '.join(env_vars[varname])))
 
