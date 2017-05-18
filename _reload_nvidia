@@ -1,0 +1,6 @@
+#!/bin/bash -ex
+
+rmmod nvidia_uvm
+rmmod nvidia
+modprobe nvidia
+modprobe nvidia_uvm
