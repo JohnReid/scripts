@@ -9,5 +9,5 @@ do
     REPODIR=$(dirname $GITDIR)
     cd $REPODIR
     /bin/pwd
-    git st
+    git st "$@"
 done
