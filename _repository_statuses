@@ -1,8 +1,13 @@
 #!/bin/bash -e
 
-for DIR in $(locate -b --regex ^\\.git$)
+#
+# Script to check the status of git repositories.
+#
+
+for GITDIR in $(locate -b --regex ^\\.git$)
 do
-    cd $(dirname $DIR)
-    pwd
+    REPODIR=$(dirname $GITDIR)
+    cd $REPODIR
+    /bin/pwd
     git st
 done
