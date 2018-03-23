@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+#
+# Switch the nvidia prime profile
+#
+# Typically use profile=nvidia to switch the card on
+# and profile=intel to switch it off
+#
+USAGE="USAGE: $0 <prime profile>"
+
+sudo prime-select ${1?:$USAGE}
+sudo prime-switch
