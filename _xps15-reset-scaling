@@ -1,0 +1,3 @@
+#!/bin/bash -ex
+
+dconf write /com/ubuntu/user-interface/scale-factor "{'eDP1': 11, 'HDMI': 8}"
