@@ -1,0 +1,9 @@
+#!/bin/bash -ex
+#
+# Set up to tunnel to BSU to connect to jupyter notebook or web server
+#
+USAGE="$0: <machine> <port>"
+MACHINE=${1?:$USAGE}
+PORT=${2?:$USAGE}
+
+ssh -N -L $PORT::$PORT bsu-hpc
