@@ -6,4 +6,4 @@ USAGE="$0: <machine> <port>"
 MACHINE=${1?:$USAGE}
 PORT=${2?:$USAGE}
 
-ssh -N -L $PORT::$PORT bsu-hpc
+ssh -N -L $PORT:$MACHINE:$PORT bsu-hpc
