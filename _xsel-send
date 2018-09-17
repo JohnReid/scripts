@@ -1,1 +1,7 @@
+#!/bin/bash
+
+#
+# From: https://askubuntu.com/a/7807/91683
+#
+
 xsel | xvkbd -xsendevent -file - 2>/dev/null
