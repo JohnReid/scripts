@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+for ZIP in "$@"
+do
+  NAME=$(basename $ZIP .zip)
+  echo $NAME
+  [ -d "$NAME" ] || mkdir "$NAME"
+  cd "$NAME"
+  unzip $ZIP
+  cd ..
+done
