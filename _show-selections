@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Show various X selections
+#
+echo "Primary:"
+xsel -p -o
+echo
+echo
+echo "Secondary:"
+xsel -s -o
+echo
+echo
+echo "Clipboard:"
+xsel -b -o
