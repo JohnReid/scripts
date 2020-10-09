@@ -13,7 +13,9 @@ _logger = logging.getLogger(__name__)
 def grouper(iterable, n, fillvalue=None):
     """Collect data into fixed-length chunks or blocks.
 
+    ```python
     grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    ```
 
     From itertools documentation examples.
     Also found in more-itertools package."""
@@ -34,7 +36,7 @@ def wrangle_macaddress(macaddress):
         sep = macaddress[2]
         macaddress = macaddress.replace(sep, '')
     else:
-        raise ValueError('Incorrect MAC address format')
+        raise ValueError(f'Incorrect MAC address format: {macaddress}')
     return macaddress
 
 
@@ -44,9 +46,9 @@ def wake_on_lan(macaddress):
     Use MAC address with any separators or without separators:
 
     ```python
-        wake_on_lan('0F:0F:DF:0F:BF:EF')
-        wake_on_lan('0F-0F-DF-0F-BF-EF')
-        wake_on_lan('0F0FDF0FBFEF')
+    wake_on_lan('0F:0F:DF:0F:BF:EF')
+    wake_on_lan('0F-0F-DF-0F-BF-EF')
+    wake_on_lan('0F0FDF0FBFEF')
     ```
 
     """
@@ -63,7 +65,6 @@ def wake_on_lan(macaddress):
     send_data = b''.join(map(pack_hex, map(''.join, grouper(data, 2))))
     _logger.debug('send_data: %s', send_data)
 
-    # Broadcast it to the LAN.
     _logger.info('Broadcasting to LAN')
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
