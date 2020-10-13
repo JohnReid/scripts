@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+"""Add quotes to lines:
+
+```
+My line with spaces
+My other line with spaces
+```
+is transformed to
+```
+"My line with spaces"
+"My other line with spaces"
+```
+"""
+
+import sys
+
+for line in sys.stdin:
+    print(f'"{line.strip()}"')
