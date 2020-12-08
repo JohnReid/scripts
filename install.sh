@@ -4,9 +4,11 @@
 # Installs the scripts as soft links
 #
 
+BINDIR=${HOME}/bin
+
 function link_file {
     source="${PWD}/$1"
-    target="${HOME}/bin/${1/_/}"
+    target="${BINDIR}/${1/_/}"
 
     if [ -e "${target}" ] && [ ! -L "${target}" ]; then
         echo "Renaming $target to $target.bak"
@@ -18,6 +20,11 @@ function link_file {
         ln -sf ${source} ${target}
     fi
 }
+
+if [ ! -d ${BINDIR} ]
+then
+    mkdir ${BINDIR}
+fi
 
 for i in _*
 do
