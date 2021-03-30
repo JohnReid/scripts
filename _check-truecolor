@@ -1,5 +1,6 @@
 #!/bin/bash
 # Based on: https://gist.github.com/XVilka/8346728
+# From: https://stackoverflow.com/a/53343481/959926
 
 awk -v term_cols="${width:-$(tput cols || echo 80)}" 'BEGIN{
     s="/\\";
