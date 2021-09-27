@@ -11,6 +11,7 @@ import os
 from optparse import OptionParser
 from collections import defaultdict
 
+
 def make_unique(*iterable):
     s = set()
     for i in iterable:
@@ -83,7 +84,8 @@ for varname, tag in environment_vars:
     # Write if we changed anything
     if changed:
         anything_changed = True
-        env_vars[varname] = map(os.path.normpath, make_unique(*env_vars[varname]))
+        env_vars[varname] = map(os.path.normpath,
+                                make_unique(*env_vars[varname]))
         print('export %s=%s' % (varname, ':'.join(env_vars[varname])))
 
 #
@@ -91,5 +93,5 @@ for varname, tag in environment_vars:
 #
 if options.show_all or not anything_changed:
     for varname, tag in environment_vars:
-        print('#\n# %s\n#   %s\n#' % (varname, '\n#   '.join(env_vars[varname])))
-
+        print('#\n# %s\n#   %s\n#'
+              % (varname, '\n#   '.join(env_vars[varname])))
