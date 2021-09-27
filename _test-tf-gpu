@@ -6,6 +6,17 @@ Test if tensorflow is using the GPU.
 import tensorflow as tf
 from packaging import version
 
+print('TensorFlow located at: ', tf.__file__)
+
+try:
+    if not tf.test.is_built_with_cuda():
+        print('**** TensorFlow was not built with CUDA support. ****')
+    else:
+        print('TensorFlow was built with CUDA support.')
+
+except Exception:
+    print('Could not determine if TensorFlow was built with CUDA support.')
+
 # Log device placement
 tf.debugging.set_log_device_placement(True)
 
@@ -15,7 +26,8 @@ b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
 c = tf.matmul(a, b)
 
 if version.parse(tf.__version__) >= version.parse('2.0.0'):
-  print(c)
+    print('Num GPUs Available: ', len(tf.config.list_physical_devices('GPU')))
+    print(c)
 else:
   # Creates a session with log_device_placement set to True.
   sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
