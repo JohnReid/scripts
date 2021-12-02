@@ -3,4 +3,10 @@
 # Recover filenames from nvim swap directory
 #
 
-ls ~/.local/share/nvim/swap/* | sed 's/^.*swap\///' | sed 's/%/\//g' | sed 's/\.sw.$//'
+shopt -s nullglob dotglob     # To include hidden files
+NVIM_SWAP_DIR=$HOME/.local/share/nvim/swap
+FILES=(${NVIM_SWAP_DIR}/*)
+if [ ${#FILES[@]} -gt 0 ]
+then
+  ls ${NVIM_SWAP_DIR}/* | sed 's/^.*swap\///' | sed 's/%/\//g' | sed 's/\.sw.$//'
+fi
