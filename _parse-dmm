@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Script to parse IMM text file defining PWMs and output them as biopsy custom
